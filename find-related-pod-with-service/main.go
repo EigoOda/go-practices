@@ -1,12 +1,13 @@
 package main
 
 import (
-    "context"
+    // "context"
 	"flag"
 	"fmt"
     "os"
+	"yaml"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -26,11 +27,18 @@ func main() {
         panic(err.Error())
     }
 
-    pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-    if err != nil {
-        panic(err.Error())
-    }
-    fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+	output, err := yaml.Marshal(clientset)
+	if err != nil {
+		fmt.Printf("Unexpected error: %v", err)
+	}
+
+	fmt.Printf("%v", string(output))
+
+    // pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+    // if err != nil {
+    //     panic(err.Error())
+    // }
+    // fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 }
 
 func getEnv(key, fallback string) string {
