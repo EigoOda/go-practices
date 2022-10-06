@@ -1,19 +1,18 @@
 package main
 
 import (
-    // "context"
+	"context"
 	"flag"
 	"fmt"
-    "os"
-	"yaml"
+	"os"
 
-	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 func main() {
-	kubeconfig := flag.String("kubeconfig",getEnv("KUBECONFIG", clientcmd.RecommendedHomeFile),"kubeconfig file")
+	kubeconfig := flag.String("kubeconfig", getEnv("KUBECONFIG", clientcmd.RecommendedHomeFile), "kubeconfig file")
 	flag.Parse()
 
 	// use the current context in kubeconfig
@@ -22,23 +21,18 @@ func main() {
 		panic(err.Error())
 	}
 
-    clientset, err := kubernetes.NewForConfig(config)
-    if err != nil {
-        panic(err.Error())
-    }
-
-	output, err := yaml.Marshal(clientset)
+	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		fmt.Printf("Unexpected error: %v", err)
+		panic(err.Error())
 	}
 
-	fmt.Printf("%v", string(output))
-
-    // pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-    // if err != nil {
-    //     panic(err.Error())
-    // }
-    // fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+    svc, err := clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+    for _, svc := range svc.Items{
+        fmt.Println(svc.GetName())
+    }
 }
 
 func getEnv(key, fallback string) string {
