@@ -26,13 +26,14 @@ func main() {
 		panic(err.Error())
 	}
 
-    svc, err := clientset.CoreV1().Services("").List(context.TODO(), metav1.ListOptions{})
+    // Get nginx service Endpoints in default namespace
+    // svc, err := clientset.CoreV1().Services("default").Get(context.TODO(), "nginx", metav1.GetOptions{})
+    endpoint, err := clientset.CoreV1().Endpoints("default").Get(context.TODO(), "nginx", metav1.GetOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
-    for _, svc := range svc.Items{
-        fmt.Println(svc.GetName())
-    }
+    subts := (endpoint.Subsets)
+    fmt.Println(subts)
 }
 
 func getEnv(key, fallback string) string {
