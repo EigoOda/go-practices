@@ -32,8 +32,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-    subts := (endpoint.Subsets)
-    fmt.Println(subts)
+    fmt.Print(endpoint.Subsets)
 }
 
 func getEnv(key, fallback string) string {
