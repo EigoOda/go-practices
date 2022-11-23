@@ -28,13 +28,20 @@ func main() {
 		panic(err.Error())
 	}
 
-    // Get nginx service Endpoints in default namespace
-    // svc, err := clientset.CoreV1().Services("default").Get(context.TODO(), "nginx", metav1.GetOptions{})
+    // Get nginx service endpoint in default namespace
     endpoint, err := clientset.CoreV1().Endpoints("default").Get(context.TODO(), "nginx", metav1.GetOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
-    fmt.Print(endpoint.Subsets)
+    // Decode struct
+    jsonData, err := json.Marshal(endpoint.Subsets)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    // Get service endpoint IPs
+    podIps := gjson.Get(string(jsonData), "#.addresses.#.ip")
+    fmt.Println(podIps)
 }
 
 func getEnv(key, fallback string) string {
